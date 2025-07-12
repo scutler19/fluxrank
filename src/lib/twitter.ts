@@ -47,7 +47,7 @@ export async function postTweet(text: string): Promise<{ id: string; text: strin
     console.error('Twitter API error:', error)
 
     // Retry once for rate limits or server errors
-    if ((error as any).code === 429 || (error as any).code === 503) {
+    if ((error as { code?: number }).code === 429 || (error as { code?: number }).code === 503) {
       console.log('Rate limit or server error, retrying in 30 seconds...')
       await new Promise(resolve => setTimeout(resolve, 30000))
 

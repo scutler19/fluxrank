@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getTopProjects } from '@/lib/getTopProjects'
 import { postTweet, buildMoversTweet } from '@/lib/twitter'
 
