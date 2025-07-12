@@ -30,6 +30,17 @@ async function processPackage(packageName: string): Promise<{ok: boolean, downlo
   try {
     console.log(`Processing package: ${packageName}`);
     
+    // First, check if the package exists in the projects table
+    const { data: project, error: lookupError } = await supabase
+      .from('projects')
+      .select('project_id')
+      .eq('project_id', packageName)
+      .single();
+
+    if (lookupError || !project) {
+      return { ok: false, error: `Package not found in projects table: ${packageName}` };
+    }
+    
     // Fetch npm data with retry logic for rate limits
     let downloads: number;
     try {
