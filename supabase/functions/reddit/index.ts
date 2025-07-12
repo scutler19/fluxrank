@@ -1,36 +1,40 @@
-// supabase/functions/github/index.ts
+// supabase/functions/reddit/index.ts
 import { serve } from "https://deno.land/std@0.203.0/http/server.ts";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-import { fetchStars } from "../_shared/utils.ts";
+import { fetchRedditMentions } from "../_shared/utils.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
-async function processProject(projectSlug: string): Promise<{ok: boolean, stars?: number, forks?: number, error?: string}> {
+async function processRedditQuery(query: string): Promise<{ok: boolean, mentions?: number, error?: string}> {
   try {
-    console.log(`Processing project: ${projectSlug}`);
-    console.log(`GITHUB_TOKEN exists: ${!!Deno.env.get("GITHUB_TOKEN")}`);
+    console.log(`Processing Reddit query: ${query}`);
     
-    const [owner, repo] = projectSlug.split('/');
-    if (!owner || !repo) {
-      return { ok: false, error: "Invalid project_slug format. Expected 'owner/repo'" };
+    // Get project_id from projects table using slug lookup
+    const { data: projects, error: lookupError } = await supabase
+      .from('projects')
+      .select('project_id')
+      .eq('project_id', query)
+      .single();
+
+    if (lookupError || !projects) {
+      return { ok: false, error: `Project not found: ${query}` };
     }
 
-    // Fetch GitHub data with retry logic for rate limits
-    let stars: number, forks: number;
+    const projectId = projects.project_id;
+    
+    // Fetch Reddit mentions with retry logic for rate limits
+    let mentions: number;
     try {
-      const result = await fetchStars(owner, repo);
-      stars = result.stars;
-      forks = result.forks;
+      mentions = await fetchRedditMentions(query);
     } catch (error) {
       if (error.message === "RATE_LIMIT_EXCEEDED") {
         // Wait 30 seconds and retry once
+        console.log(`Rate limit hit, waiting 30 seconds before retry...`);
         await new Promise(resolve => setTimeout(resolve, 30000));
-        const retryResult = await fetchStars(owner, repo);
-        stars = retryResult.stars;
-        forks = retryResult.forks;
+        mentions = await fetchRedditMentions(query);
       } else {
         throw error;
       }
@@ -40,10 +44,9 @@ async function processProject(projectSlug: string): Promise<{ok: boolean, stars?
     const { error: insertError } = await supabase
       .from('snapshots')
       .insert({
-        project_id: projectSlug,
-        src: 'github',
-        stars,
-        forks,
+        project_id: projectId,
+        src: 'reddit',
+        mentions,
         captured_at: new Date().toISOString()
       });
 
@@ -51,16 +54,16 @@ async function processProject(projectSlug: string): Promise<{ok: boolean, stars?
       throw new Error(`Database error: ${insertError.message}`);
     }
 
-    return { ok: true, stars, forks };
+    return { ok: true, mentions };
   } catch (error) {
-    console.error(`Error processing ${projectSlug}:`, error);
+    console.error(`Error processing Reddit query ${query}:`, error);
     return { ok: false, error: error.message };
   }
 }
 
 serve(async (req) => {
   try {
-    console.log("Request received");
+    console.log("Reddit request received");
     
     // Handle POST requests for batch mode
     if (req.method === 'POST') {
@@ -68,26 +71,14 @@ serve(async (req) => {
       const { mode, packages } = body;
       
       if (mode === 'batch' && packages && Array.isArray(packages)) {
-        // Package name to GitHub repo mapping
-        const packageToRepo: Record<string, string> = {
-          'react': 'facebook/react',
-          'vue': 'vuejs/vue',
-          'angular': 'angular/angular',
-          'next': 'vercel/next.js',
-          'nuxt': 'nuxt/nuxt',
-          'svelte': 'sveltejs/svelte',
-          'express': 'expressjs/express',
-          'fastify': 'fastify/fastify',
-          'prisma': 'prisma/prisma',
-          'typeorm': 'typeorm/typeorm',
-          'supabase': 'supabase/supabase'
-        };
-        
         const results = [];
         for (const pkg of packages) {
-          const repoSlug = packageToRepo[pkg] || pkg;
-          const result = await processProject(repoSlug);
-          results.push({ project_id: repoSlug, ...result });
+          try {
+            const result = await processRedditQuery(pkg);
+            results.push({ project_id: pkg, ...result });
+          } catch (error) {
+            results.push({ project_id: pkg, ok: false, error: error.message });
+          }
         }
         
         return new Response(JSON.stringify({ ok: true, results }), {
@@ -97,16 +88,16 @@ serve(async (req) => {
       }
     }
     
-    // Handle GET requests for single project or all projects
+    // Handle GET requests for single query or all projects
     const url = new URL(req.url);
-    const projectSlug = url.searchParams.get('project_slug');
-    console.log(`Project slug: ${projectSlug}`);
+    const query = url.searchParams.get('q');
+    console.log(`Query: ${query}`);
 
-    if (projectSlug) {
-      // Process single project
-      const result = await processProject(projectSlug);
+    if (query) {
+      // Process single query
+      const result = await processRedditQuery(query);
       const status = result.ok ? 200 : 400;
-      console.log(`Single project result:`, result);
+      console.log(`Single query result:`, result);
       return new Response(JSON.stringify(result), {
         status,
         headers: { 'Content-Type': 'application/json' }
@@ -131,11 +122,15 @@ serve(async (req) => {
         });
       }
 
-      // Process each project
+      // Process each project directly
       const results = [];
       for (const project of projects) {
-        const result = await processProject(project.project_id);
-        results.push({ project_id: project.project_id, ...result });
+        try {
+          const result = await processRedditQuery(project.project_id);
+          results.push({ project_id: project.project_id, ...result });
+        } catch (error) {
+          results.push({ project_id: project.project_id, ok: false, error: error.message });
+        }
       }
 
       return new Response(JSON.stringify({ ok: true, results }), {
@@ -154,6 +149,6 @@ serve(async (req) => {
 
 /*
 Smoke test:
-curl "http://localhost:54321/functions/v1/github?project_slug=supabase/supabase"
-# => 200 { ok:true, stars:..., forks:... }
-*/
+curl "http://localhost:54321/functions/v1/reddit?q=supabase"
+# => 200 { ok:true, mentions: <number> }
+*/ 

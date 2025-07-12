@@ -1,103 +1,119 @@
-import Image from "next/image";
+import { Metadata } from 'next'
+
+export const dynamic = 'force-static'
+
+export const metadata: Metadata = {
+  title: 'FluxRank – Real-time OSS Leaderboard',
+  description: 'Spot tomorrow\'s breakout dev tools, today. Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.',
+  openGraph: {
+    title: 'FluxRank – Real-time OSS Leaderboard',
+    description: 'Spot tomorrow\'s breakout dev tools, today. Real-time leaderboard of open source projects ranked by momentum.',
+    type: 'website',
+    url: 'https://fluxrank.com',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FluxRank – Real-time OSS Leaderboard',
+    description: 'Spot tomorrow\'s breakout dev tools, today.',
+  },
+}
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Header */}
+      <header className="border-b border-gray-800">
+        <div className="max-w-xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="text-2xl font-bold text-blue-400">FluxRank.io</div>
+          <a 
+            href="/leaderboard" 
+            className="text-gray-300 hover:text-white transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+            View Leaderboard →
           </a>
         </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="max-w-xl mx-auto px-4 py-16 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
+          Spot tomorrow&apos;s breakout dev tools,{' '}
+          <span className="text-blue-400">today.</span>
+        </h1>
+        
+        <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+          Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.
+        </p>
+
+        <div className="w-full max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3">
+                      <input
+            type="email"
+            placeholder="Enter your email"
+            className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+          />
+          <button
+            type="button"
+            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors"
+          >
+              Join Beta
+            </button>
+          </div>
+          <div className="mt-2 text-gray-400 text-sm text-center">
+            We&apos;ll notify you when FluxRank launches.
+          </div>
+        </div>
+
+        {/* Feature Bullets */}
+        <div className="mt-16 space-y-6">
+          <div className="flex items-start gap-4 text-left">
+            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+              <span className="text-blue-400 text-lg">⚡</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-white mb-1">Real-time Momentum</h3>
+              <p className="text-gray-400">Track which projects are gaining traction right now, not just total popularity.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 text-left">
+            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+              <span className="text-blue-400 text-lg">📊</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-white mb-1">Multi-Source Intelligence</h3>
+              <p className="text-gray-400">Combines GitHub activity, npm downloads, and Reddit discussions for comprehensive insights.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 text-left">
+            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+              <span className="text-blue-400 text-lg">🎯</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-white mb-1">Early Detection</h3>
+              <p className="text-gray-400">Discover promising projects before they become mainstream and get ahead of the curve.</p>
+            </div>
+          </div>
+        </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-800 mt-16">
+        <div className="max-w-xl mx-auto px-4 py-8 text-center">
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
+            <span>Built by</span>
+            <a 
+              href="https://x.com/ExitCodeZer0" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              @ExitCodeZer0
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
