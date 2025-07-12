@@ -6,7 +6,7 @@ interface DeltaProps {
 export default function Delta({ delta, className = '' }: DeltaProps) {
   if (delta === null || delta === undefined) {
     return (
-      <span className={`text-gray-500 dark:text-gray-400 text-sm ${className}`}>
+      <span className={`text-brand-gray text-sm ${className}`}>
         —
       </span>
     )
@@ -17,10 +17,10 @@ export default function Delta({ delta, className = '' }: DeltaProps) {
 
   const arrow = isPositive ? '↑' : isNegative ? '↓' : '→'
   const colorClass = isPositive 
-    ? 'text-green-600 dark:text-green-400' 
+    ? 'text-success' 
     : isNegative 
-      ? 'text-red-600 dark:text-red-400' 
-      : 'text-gray-500 dark:text-gray-400'
+      ? 'text-error' 
+      : 'text-brand-gray'
 
   return (
     <span className={`text-sm font-medium ${colorClass} ${className}`}>

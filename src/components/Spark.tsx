@@ -13,12 +13,12 @@ export default function Spark({
   data, 
   width = 100, 
   height = 30, 
-  color = '#3b82f6' 
+  color = '#C2FF29' 
 }: SparkProps) {
   if (!data || data.length === 0) {
     return (
       <div 
-        className="bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
+        className="bg-neutral-900 rounded animate-pulse"
         style={{ width, height }}
       />
     )
@@ -39,7 +39,7 @@ export default function Spark({
           content={({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string }; value?: number }> }) => {
             if (active && payload && payload.length) {
               return (
-                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg text-xs">
+                <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-2 shadow-lg text-xs text-gray-100 backdrop-blur-sm">
                   <p className="font-medium">
                     {payload[0].payload.date}: {payload[0].value?.toFixed(2)}
                   </p>

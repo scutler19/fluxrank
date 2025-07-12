@@ -30,6 +30,48 @@ export async function getTopProjects(
 ): Promise<TopProjectResult[]> {
   const { limit = 50, hours = 24 } = options
 
+  // Return mock data if Supabase is not available
+  if (!supabase) {
+    return [
+      {
+        projectId: 'facebook/react',
+        slug: 'facebook/react',
+        score: 95.2,
+        deltaVsPrevPeriod: 2.1,
+        name: 'React',
+        description: 'The library for web and native user interfaces',
+        githubStars: 210000,
+        githubForks: 44000,
+        npmDownloads: 39743592,
+        redditMentions: 1250,
+      },
+      {
+        projectId: 'vercel/next.js',
+        slug: 'vercel/next.js',
+        score: 87.8,
+        deltaVsPrevPeriod: -1.3,
+        name: 'Next.js',
+        description: 'The React Framework for Production',
+        githubStars: 110000,
+        githubForks: 24000,
+        npmDownloads: 11150662,
+        redditMentions: 890,
+      },
+      {
+        projectId: 'supabase/supabase',
+        slug: 'supabase/supabase',
+        score: 82.4,
+        deltaVsPrevPeriod: 5.7,
+        name: 'Supabase',
+        description: 'The open source Firebase alternative',
+        githubStars: 65000,
+        githubForks: 12000,
+        npmDownloads: 303111,
+        redditMentions: 450,
+      },
+    ].slice(0, limit)
+  }
+
   try {
     // Calculate the target date based on hours window
     const targetDate = new Date()
@@ -77,6 +119,11 @@ export async function getTopProjectsForDate(
   date: string,
   limit: number = 50
 ): Promise<TopProjectResult[]> {
+  // Return empty array if Supabase is not available
+  if (!supabase) {
+    return []
+  }
+
   try {
     const { data, error } = await supabase
       .from('daily_rankings')
@@ -124,6 +171,11 @@ export async function getProjectMomentumHistory(
   projectId: string,
   days: number = 30
 ): Promise<Array<{ date: string; score: number; delta: number | null }>> {
+  // Return empty array if Supabase is not available
+  if (!supabase) {
+    return []
+  }
+
   try {
     const { data, error } = await supabase
       .from('daily_rankings')

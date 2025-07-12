@@ -8,6 +8,7 @@ export default function EmailForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -26,6 +27,16 @@ export default function EmailForm() {
     setIsLoading(true)
 
     try {
+      if (!supabaseBrowser) {
+        // Fallback for demo - just show success
+        setTimeout(() => {
+          setIsSuccess(true)
+          setEmail('')
+          setIsLoading(false)
+        }, 1000)
+        return
+      }
+
       const { error } = await supabaseBrowser
         .from('waitlist')
         .insert([{ email: email.toLowerCase().trim() }])
@@ -50,41 +61,96 @@ export default function EmailForm() {
 
   if (isSuccess) {
     return (
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-center">
-        <div className="text-green-800 dark:text-green-200 font-medium">
-          🎉 You&apos;re on the list!
+      <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 sm:p-8 text-center backdrop-blur-sm">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+            <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="text-green-400 font-semibold text-lg sm:text-xl">
+            You're on the list!
+          </div>
         </div>
-        <div className="text-green-600 dark:text-green-300 text-sm mt-1">
-          We&apos;ll notify you when FluxRank launches.
+        <div className="text-gray-400 text-sm sm:text-base">
+          We'll notify you when FluxRank launches. No spam, ever.
         </div>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-md">
-      <div className="flex flex-col sm:flex-row gap-3">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1DEE7F] focus:border-transparent"
-          disabled={isLoading}
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-3 bg-[#1DEE7F] hover:bg-[#1DEE7F]/90 text-[#0D0D11] font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Joining...' : 'Join Beta'}
-        </button>
-      </div>
-      {error && (
-        <div className="mt-2 text-red-600 dark:text-red-400 text-sm">
-          {error}
+    <div className="w-full max-w-lg mx-auto">
+      {/* Trust signals */}
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500">
+          <div className="flex items-center gap-1">
+            <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>No spam</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Unsubscribe anytime</span>
+          </div>
         </div>
-      )}
-    </form>
+      </div>
+
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="relative flex-1">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder="Enter your email address"
+              className={`w-full px-4 py-4 sm:py-5 rounded-xl border-2 bg-neutral-800/50 text-gray-100 placeholder-gray-500 focus:outline-none transition-all duration-200 text-base sm:text-lg ${
+                isFocused 
+                  ? 'border-brand-lime bg-neutral-800/70 shadow-lg shadow-brand-lime/20' 
+                  : 'border-neutral-600 hover:border-neutral-500'
+              } ${error ? 'border-red-500' : ''}`}
+              disabled={isLoading}
+            />
+            {error && (
+              <div className="absolute -bottom-6 left-0 text-red-400 text-sm flex items-center gap-1">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
+            )}
+          </div>
+          
+          <button
+            type="submit"
+            disabled={isLoading || !email.trim()}
+            className={`relative px-6 sm:px-8 py-4 sm:py-5 font-bold rounded-xl transition-all duration-300 transform text-base sm:text-lg ${
+              isLoading || !email.trim()
+                ? 'bg-neutral-600 text-neutral-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-brand-lime to-brand-limeLight hover:from-brand-limeLight hover:to-brand-lime text-black shadow-lg hover:shadow-xl hover:shadow-brand-lime/25 hover:-translate-y-1 active:translate-y-0'
+            } border-2 border-transparent hover:border-brand-limeLight/50`}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                <span>Joining...</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span>Join Beta</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   )
 } 

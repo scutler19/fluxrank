@@ -2,11 +2,12 @@ import { Suspense } from 'react'
 import Spark from '@/components/Spark'
 import Delta from '@/components/Delta'
 import LeaderboardSkeleton from '@/components/LeaderboardSkeleton'
+import Logo from '@/components/Logo'
 
 export const revalidate = 300 // Revalidate every 5 minutes
 
 export const metadata = {
-  title: 'FluxRank – Live OSS Leaderboard',
+  title: 'FluxRank.io – Live OSS Leaderboard',
   description: 'Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.',
 }
 
@@ -79,33 +80,33 @@ async function LeaderboardTable() {
   const topProjects = mockTopProjects
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Top Projects by Momentum</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">Last 24 hours • Updated every 5 minutes</p>
+    <div className="bg-neutral-800 rounded-lg shadow-sm border border-neutral-700 overflow-hidden">
+      <div className="px-6 py-4 bg-neutral-900 border-b border-neutral-700">
+        <h2 className="text-xl font-semibold text-gray-100">Top Projects by Momentum</h2>
+        <p className="text-gray-400 text-sm">Last 24 hours • Updated every 5 minutes</p>
       </div>
       
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="divide-y divide-neutral-700">
         {topProjects.map((project, index) => (
-          <div key={project.projectId} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div key={project.projectId} className="px-6 py-4 hover:bg-neutral-900 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4 flex-1">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                <div className="flex-shrink-0 w-8 h-8 bg-brand-lime/20 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-brand-lime">
                     {index + 1}
                   </span>
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
+                  <h3 className="text-lg font-medium text-gray-100 truncate">
                     <a 
                       href={`/project/${project.slug}`}
-                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="hover:text-brand-lime transition-colors"
                     >
                       {project.name}
                     </a>
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-sm text-gray-400 truncate">
                     {project.description || project.projectId}
                   </p>
                 </div>
@@ -113,14 +114,14 @@ async function LeaderboardTable() {
               
               <div className="flex items-center space-x-6">
                 <div className="text-right">
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <div className="text-lg font-semibold text-gray-100">
                     {project.score.toFixed(1)}
                   </div>
                   <Delta delta={project.deltaVsPrevPeriod} />
                 </div>
                 
                 <div className="w-24">
-                  <Suspense fallback={<div className="w-24 h-8 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />}>
+                  <Suspense fallback={<div className="w-24 h-8 bg-neutral-900 rounded animate-pulse" />}>
                     <SparkWrapper />
                   </Suspense>
                 </div>
@@ -132,7 +133,7 @@ async function LeaderboardTable() {
       
       {topProjects.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400">No projects found. Rankings may not be calculated yet.</p>
+          <p className="text-gray-400">No projects found. Rankings may not be calculated yet.</p>
         </div>
       )}
     </div>
@@ -156,16 +157,16 @@ async function SparkWrapper() {
 
 export default function LeaderboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-dark-bg">
       {/* Top bar */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-neutral-900 border-b border-neutral-700">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">FluxRank</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">Live OSS Leaderboard</p>
+              <Logo width={180} height={40} />
+              <p className="text-gray-400 mt-1">Live OSS Leaderboard</p>
             </div>
-            <div className="text-right text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-right text-sm text-gray-400">
               <div>Real-time momentum tracking</div>
               <div>GitHub • npm • Reddit</div>
             </div>

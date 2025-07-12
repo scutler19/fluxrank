@@ -1,113 +1,125 @@
 import { Metadata } from 'next'
+import Logo from '@/components/Logo'
+import EmailForm from '@/components/EmailForm'
 
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: 'FluxRank – Real-time OSS Leaderboard',
+  title: 'FluxRank.io – Real-time OSS Leaderboard',
   description: 'Spot tomorrow\'s breakout dev tools, today. Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.',
   openGraph: {
-    title: 'FluxRank – Real-time OSS Leaderboard',
+    title: 'FluxRank.io – Real-time OSS Leaderboard',
     description: 'Spot tomorrow\'s breakout dev tools, today. Real-time leaderboard of open source projects ranked by momentum.',
     type: 'website',
-    url: 'https://fluxrank.com',
+    url: 'https://fluxrank.io',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FluxRank – Real-time OSS Leaderboard',
+    title: 'FluxRank.io – Real-time OSS Leaderboard',
     description: 'Spot tomorrow\'s breakout dev tools, today.',
   },
 }
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-dark-bg text-gray-200">
       {/* Header */}
-      <header className="border-b border-gray-800">
-        <div className="max-w-xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-blue-400">FluxRank.io</div>
+      <header className="border-b border-neutral-700/50">
+        <div className="max-w-4xl mx-auto px-4 py-6 flex justify-between items-center">
+          <Logo width={160} height={35} />
           <a 
             href="/leaderboard" 
-            className="text-gray-300 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-gray-200 transition-colors font-medium flex items-center gap-2 group"
           >
-            View Leaderboard →
+            <span>View Leaderboard</span>
+            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
           </a>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
+      <main className="max-w-4xl mx-auto px-4 py-16 sm:py-20 text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-lime/10 border border-brand-lime/20 rounded-full text-brand-lime text-sm font-medium mb-8">
+          <div className="w-2 h-2 bg-brand-lime rounded-full animate-pulse flex-shrink-0"></div>
+          <span className="text-center">Coming Soon - Join the Beta</span>
+        </div>
+
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
           Spot tomorrow&apos;s breakout dev tools,{' '}
-          <span className="text-blue-400">today.</span>
+          <span className="text-brand-lime bg-gradient-to-r from-brand-lime to-brand-limeLight bg-clip-text text-transparent">today.</span>
         </h1>
         
-        <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+        <p className="text-lg sm:text-xl lg:text-2xl text-gray-400 mb-10 sm:mb-12 leading-relaxed max-w-3xl mx-auto">
           Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.
         </p>
 
-        <div className="w-full max-w-md mx-auto">
-          <div className="flex flex-col sm:flex-row gap-3">
-                      <input
-            type="email"
-            placeholder="Enter your email"
-            className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          />
-          <button
-            type="button"
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors"
-          >
-              Join Beta
-            </button>
-          </div>
-          <div className="mt-2 text-gray-400 text-sm text-center">
-            We&apos;ll notify you when FluxRank launches.
-          </div>
+        {/* CTA Section */}
+        <div className="mb-16 sm:mb-20">
+          <EmailForm />
         </div>
 
         {/* Feature Bullets */}
-        <div className="mt-16 space-y-6">
-          <div className="flex items-start gap-4 text-left">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <span className="text-blue-400 text-lg">⚡</span>
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-5xl mx-auto mb-16 sm:mb-20">
+          <div className="text-center group">
+            <div className="w-16 h-16 bg-brand-lime/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-lime/20 transition-colors">
+              <svg className="w-8 h-8 text-brand-lime" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div>
-              <h3 className="font-semibold text-white mb-1">Real-time Momentum</h3>
-              <p className="text-gray-400">Track which projects are gaining traction right now, not just total popularity.</p>
-            </div>
+            <h3 className="font-bold text-gray-100 mb-3 text-lg">Real-time Momentum</h3>
+            <p className="text-gray-400 leading-relaxed">Track which projects are gaining traction right now, not just total popularity.</p>
           </div>
 
-          <div className="flex items-start gap-4 text-left">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <span className="text-blue-400 text-lg">📊</span>
+          <div className="text-center group">
+            <div className="w-16 h-16 bg-brand-pink/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-pink/20 transition-colors">
+              <svg className="w-8 h-8 text-brand-pink" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+              </svg>
             </div>
-            <div>
-              <h3 className="font-semibold text-white mb-1">Multi-Source Intelligence</h3>
-              <p className="text-gray-400">Combines GitHub activity, npm downloads, and Reddit discussions for comprehensive insights.</p>
-            </div>
+            <h3 className="font-bold text-gray-100 mb-3 text-lg">Multi-Source Intelligence</h3>
+            <p className="text-gray-400 leading-relaxed">Combines GitHub activity, npm downloads, and Reddit discussions for comprehensive insights.</p>
           </div>
 
-          <div className="flex items-start gap-4 text-left">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <span className="text-blue-400 text-lg">🎯</span>
+          <div className="text-center group">
+            <div className="w-16 h-16 bg-brand-lime/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-lime/20 transition-colors">
+              <svg className="w-8 h-8 text-brand-lime" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div>
-              <h3 className="font-semibold text-white mb-1">Early Detection</h3>
-              <p className="text-gray-400">Discover promising projects before they become mainstream and get ahead of the curve.</p>
-            </div>
+            <h3 className="font-bold text-gray-100 mb-3 text-lg">Early Detection</h3>
+            <p className="text-gray-400 leading-relaxed">Discover promising projects before they become mainstream and get ahead of the curve.</p>
           </div>
+        </div>
+
+        {/* Preview CTA */}
+        <div className="p-8 sm:p-10 bg-neutral-800/30 rounded-2xl border border-neutral-700/50 max-w-2xl mx-auto">
+          <h3 className="text-xl sm:text-2xl font-semibold text-gray-100 mb-4">Want to see it in action?</h3>
+          <p className="text-gray-400 mb-6 sm:mb-8 text-base sm:text-lg">Check out our live leaderboard with real data from popular open source projects.</p>
+          <a 
+            href="/leaderboard" 
+            className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-700 hover:bg-neutral-600 text-gray-200 font-medium rounded-xl transition-colors"
+          >
+            <span>View Live Leaderboard</span>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </a>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 mt-16">
-        <div className="max-w-xl mx-auto px-4 py-8 text-center">
+      <footer className="border-t border-neutral-700/50 mt-16 sm:mt-20">
+        <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 text-center">
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span>Built by</span>
             <a 
               href="https://x.com/ExitCodeZer0" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
+              className="text-brand-lime hover:text-brand-limeLight transition-colors font-medium"
             >
               @ExitCodeZer0
             </a>
