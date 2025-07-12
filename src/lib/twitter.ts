@@ -43,11 +43,11 @@ export async function postTweet(text: string): Promise<{ id: string; text: strin
       id: tweet.data.id,
       text: tweet.data.text,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Twitter API error:', error)
 
     // Retry once for rate limits or server errors
-    if (error.code === 429 || error.code === 503) {
+    if ((error as any).code === 429 || (error as any).code === 503) {
       console.log('Rate limit or server error, retrying in 30 seconds...')
       await new Promise(resolve => setTimeout(resolve, 30000))
 
@@ -60,13 +60,13 @@ export async function postTweet(text: string): Promise<{ id: string; text: strin
           id: tweet.data.id,
           text: tweet.data.text,
         }
-      } catch (retryError: any) {
+      } catch (retryError: unknown) {
         console.error('Twitter API retry error:', retryError)
-        throw new Error(`Failed to post tweet after retry: ${retryError.message}`)
+        throw new Error(`Failed to post tweet after retry: ${(retryError as Error).message}`)
       }
     }
 
-    throw new Error(`Failed to post tweet: ${error.message}`)
+    throw new Error(`Failed to post tweet: ${(error as Error).message}`)
   }
 }
 

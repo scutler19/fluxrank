@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getTopProjects } from '@/lib/getTopProjects'
 import { postTweet, buildMoversTweet } from '@/lib/twitter'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Daily movers tweet worker started')
 
@@ -41,17 +41,17 @@ export async function GET(request: NextRequest) {
     console.log('Daily movers tweet posted successfully:', result)
     return NextResponse.json(result)
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in daily movers tweet worker:', error)
 
     return NextResponse.json({
-      error: error.message || 'Unknown error occurred',
+      error: (error as Error).message || 'Unknown error occurred',
       tweetedAt: new Date().toISOString()
     }, { status: 500 })
   }
 }
 
 // Handle POST requests as well (for manual triggering)
-export async function POST(request: NextRequest) {
-  return GET(request)
+export async function POST() {
+  return GET()
 } 
