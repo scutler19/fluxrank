@@ -27,6 +27,7 @@ export default function EmailForm() {
     setIsLoading(true)
 
     try {
+      // Check if Supabase is available
       if (!supabaseBrowser) {
         // Fallback for demo - just show success
         setTimeout(() => {
@@ -45,6 +46,7 @@ export default function EmailForm() {
         if (error.code === '23505') { // Unique constraint violation
           setError('This email is already on our waitlist!')
         } else {
+          console.error('Supabase error:', error)
           setError('Something went wrong. Please try again.')
         }
         return
@@ -52,7 +54,8 @@ export default function EmailForm() {
 
       setIsSuccess(true)
       setEmail('')
-    } catch {
+    } catch (err) {
+      console.error('Form submission error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
@@ -128,9 +131,9 @@ export default function EmailForm() {
           
           <button
             type="submit"
-            disabled={isLoading || !email.trim()}
+            disabled={isLoading}
             className={`relative px-6 sm:px-8 py-4 sm:py-5 font-bold rounded-xl transition-all duration-300 transform text-base sm:text-lg ${
-              isLoading || !email.trim()
+              isLoading
                 ? 'bg-neutral-600 text-neutral-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-brand-lime to-brand-limeLight hover:from-brand-limeLight hover:to-brand-lime text-black shadow-lg hover:shadow-xl hover:shadow-brand-lime/25 hover:-translate-y-1 active:translate-y-0'
             } border-2 border-transparent hover:border-brand-limeLight/50`}
