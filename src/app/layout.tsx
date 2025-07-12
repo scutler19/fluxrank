@@ -24,6 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
+      <head>
+        <script defer data-domain="fluxrank.io" src="https://plausible.io/js/script.outbound-links.tagged-events.js"></script>
+      </head>
       <body
         className={`${inter.variable} font-sans antialiased bg-dark-bg text-gray-200`}
         style={{ 
