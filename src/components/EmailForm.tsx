@@ -45,7 +45,7 @@ export default function EmailForm() {
           .from('waitlist')
           .insert([{ email: email.toLowerCase().trim() }])
         supabaseError = error
-      } catch (networkError: any) {
+      } catch (networkError: unknown) {
         console.error('Network error caught:', networkError)
         // This is likely a 404 or network error - fall back to demo mode
         setTimeout(() => {
@@ -77,7 +77,7 @@ export default function EmailForm() {
 
       setIsSuccess(true)
       setEmail('')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Form submission error:', err)
       
       // Fall back to demo mode on any error
