@@ -69,11 +69,11 @@ export default function EmailForm() {
             </svg>
           </div>
           <div className="text-green-400 font-semibold text-lg sm:text-xl">
-            You're on the list!
+            You&apos;re on the list!
           </div>
         </div>
         <div className="text-gray-400 text-sm sm:text-base">
-          We'll notify you when FluxRank launches. No spam, ever.
+          We&apos;ll notify you when FluxRank launches. No spam, ever.
         </div>
       </div>
     )
