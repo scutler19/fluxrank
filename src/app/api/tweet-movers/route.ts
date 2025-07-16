@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import { getTopProjects } from '@/lib/getTopProjects'
+import { getTopProjects } from '@/lib/data'
 import { postTweet, buildMoversTweet } from '@/lib/twitter'
 
 export async function GET() {
   try {
     console.log('Daily movers tweet worker started')
 
-    // Get top 3 projects with 24-hour delta
-    const projects = await getTopProjects({ limit: 3, hours: 24 })
+    // Get top 3 projects
+    const projects = await getTopProjects(3)
 
     if (!projects || projects.length === 0) {
       console.log('No projects found for tweet')
@@ -18,8 +18,15 @@ export async function GET() {
 
     console.log(`Found ${projects.length} projects for tweet`)
 
+    // Transform data for tweet building
+    const tweetData = projects.map(p => ({
+      slug: p.project_id,
+      deltaVsPrevPeriod: p.delta_vs_prev || 0,
+      score: p.momentum_score || 0
+    }))
+
     // Build the tweet text
-    const tweetText = buildMoversTweet(projects)
+    const tweetText = buildMoversTweet(tweetData)
     console.log(`Tweet text: ${tweetText}`)
 
     // Actually post to Twitter
@@ -32,9 +39,9 @@ export async function GET() {
       tweetText: tweetResult.text,
       projectsCount: projects.length,
       projects: projects.map(p => ({
-        slug: p.slug,
-        delta: p.deltaVsPrevPeriod,
-        score: p.score
+        slug: p.project_id,
+        delta: p.delta_vs_prev || 0,
+        score: p.momentum_score || 0
       }))
     }
 
