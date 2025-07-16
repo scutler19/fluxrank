@@ -5,7 +5,16 @@ export async function POST() {
       'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
     }
   });
-  const data = await res.json();
+
+  let data;
+  const text = await res.text();
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    // Not JSON, return raw text for debugging
+    data = { error: 'Non-JSON response', body: text, status: res.status };
+  }
+
   return new Response(JSON.stringify(data), { status: res.status });
 }
 
