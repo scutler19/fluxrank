@@ -1,4 +1,7 @@
 export async function POST() {
+  // TEMP: Log the key length (never log the full key in production)
+  console.log('SUPABASE_SERVICE_ROLE_KEY length:', process.env.SUPABASE_SERVICE_ROLE_KEY?.length);
+
   const res = await fetch('https://nlyntfrhzghdyuohawne.supabase.co/functions/v1/discover', {
     method: 'POST',
     headers: {
