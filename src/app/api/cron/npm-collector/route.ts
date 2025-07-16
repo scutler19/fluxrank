@@ -1,5 +1,5 @@
 export async function POST() {
-  const res = await fetch('https://nlyntfrhzghdyuohawne.functions.supabase.co/npm', {
+  const res = await fetch('https://nlyntfrhzghdyuohawne.supabase.co/functions/v1/npm', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
