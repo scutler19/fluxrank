@@ -10,7 +10,7 @@ export async function POST() {
   const text = await res.text();
   try {
     data = JSON.parse(text);
-  } catch (e) {
+  } catch {
     // Not JSON, return raw text for debugging
     data = { error: 'Non-JSON response', body: text, status: res.status };
   }
