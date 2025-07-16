@@ -1,8 +1,16 @@
 {
-  "crons": [
+  "cron": [
     {
-      "path": "/api/tweet-movers",
-      "schedule": "0 14 * * *"
+      "path": "/api/cron/github-collector",
+      "schedule": "1 0 * * *"
+    },
+    {
+      "path": "/api/cron/npm-collector",
+      "schedule": "2 0 * * *"
+    },
+    {
+      "path": "/api/cron/reddit-collector",
+      "schedule": "3 0 * * *"
     }
   ]
 } 
