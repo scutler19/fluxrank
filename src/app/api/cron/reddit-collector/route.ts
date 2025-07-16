@@ -2,8 +2,10 @@ export async function POST() {
   const res = await fetch('https://nlyntfrhzghdyuohawne.supabase.co/functions/v1/reddit', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-    }
+      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({})
   });
 
   let data;
@@ -11,7 +13,6 @@ export async function POST() {
   try {
     data = JSON.parse(text);
   } catch {
-    // Not JSON, return raw text for debugging
     data = { error: 'Non-JSON response', body: text, status: res.status };
   }
 
