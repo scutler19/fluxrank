@@ -1,12 +1,17 @@
-export async function POST() {
-  const res = await fetch('https://nlyntfrhzghdyuohawne.supabase.co/functions/v1/reddit', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({})
-  });
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const params = url.search; // includes ?limit=5&offset=0 if present
+
+  const res = await fetch(
+    `https://nlyntfrhzghdyuohawne.supabase.co/functions/v1/reddit${params}`,
+    {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
 
   let data;
   const text = await res.text();
@@ -19,4 +24,4 @@ export async function POST() {
   return new Response(JSON.stringify(data), { status: res.status });
 }
 
-export const GET = POST; 
+export const POST = GET; 
