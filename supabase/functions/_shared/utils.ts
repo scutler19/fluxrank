@@ -37,10 +37,9 @@ export async function fetchStars(owner: string, repo: string): Promise<{stars: n
   };
 }
 
-export async function fetchRedditMentions(query: string): Promise<number> {
+export async function fetchRedditMentions(terms: string[]): Promise<number> {
   try {
     // Use Reddit's JSON endpoints to search for mentions
-    // Search in programming-related subreddits for better relevance
     const subreddits = [
       'programming', 'webdev', 'javascript', 'reactjs', 'node', 'typescript',
       'python', 'rust', 'golang', 'php', 'dotnet', 'java', 'kotlin', 'swift',
@@ -51,80 +50,56 @@ export async function fetchRedditMentions(query: string): Promise<number> {
 
     let totalMentions = 0;
     const searchPromises = subreddits.slice(0, 10).map(async (subreddit) => {
-      try {
-        const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&t=week&limit=100`;
-        
+      let subredditMentions = 0;
+      for (const term of terms) {
+        const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(term)}&restrict_sr=on&t=week&limit=100`;
         const response = await fetch(url, {
           headers: {
             "Accept": "application/json",
-            "User-Agent": "FluxRank-Reddit-Collector/1.0 (by /u/fluxrank_bot)"
+            "User-Agent": "FluxRank-Reddit-Collector/2.0 (by /u/fluxrank_bot)"
           }
         });
-
         if (!response.ok) {
           if (response.status === 429) {
             throw new Error("RATE_LIMIT_EXCEEDED");
           }
-          return 0; // Skip this subreddit if it fails
+          continue; // Skip this subreddit/term if it fails
         }
-
         const data = await response.json();
         const posts = data.data?.children || [];
-        
-        // Count mentions in post titles and comments
-        let mentions = posts.length;
-        
-        // Also check for mentions in comments (limited to avoid rate limits)
-        for (const post of posts.slice(0, 5)) {
-          try {
-            const commentsUrl = `https://www.reddit.com${post.data.permalink}.json`;
-            const commentsResponse = await fetch(commentsUrl, {
-              headers: {
-                "Accept": "application/json",
-                "User-Agent": "FluxRank-Reddit-Collector/1.0 (by /u/fluxrank_bot)"
-              }
-            });
-            
-            if (commentsResponse.ok) {
-              const commentsData = await commentsResponse.json();
-              const comments = commentsData[1]?.data?.children || [];
-              mentions += comments.length;
-            }
-            
-            // Small delay to be respectful to Reddit's servers
-            await new Promise(resolve => setTimeout(resolve, 100));
-          } catch (error) {
-            // Continue if comment fetching fails
-            if (error instanceof Error) {
-              console.log(`Failed to fetch comments for post in r/${subreddit}:`, error.message);
-            } else {
-              console.log(`Failed to fetch comments for post in r/${subreddit}:`, error);
-            }
+        // Log the number of posts returned and the first 3 post titles/selftexts
+        console.log(`[Reddit][DEBUG] r/${subreddit} term "${term}": ${posts.length} posts returned`);
+        posts.slice(0, 3).forEach((post, idx) => {
+          const title = post.data?.title || '';
+          const selftext = post.data?.selftext || '';
+          console.log(`[Reddit][DEBUG] Post ${idx + 1}: title="${title}" selftext="${selftext.slice(0, 80)}..."`);
+        });
+        // Count posts where the term appears in the title or selftext
+        let matches = 0;
+        for (const post of posts) {
+          const title = post.data?.title?.toLowerCase() || '';
+          const selftext = post.data?.selftext?.toLowerCase() || '';
+          if (title.includes(term.toLowerCase()) || selftext.includes(term.toLowerCase())) {
+            matches++;
           }
         }
-        
-        return mentions;
-      } catch (error) {
-        console.log(`Failed to search r/${subreddit}:`, error.message);
-        if (error instanceof Error) {
-          console.log(`Failed to search r/${subreddit}:`, error.message);
-        } else {
-          console.log(`Failed to search r/${subreddit}:`, error);
-        }
-        return 0;
+        subredditMentions += matches;
+        console.log(`[Reddit] Subreddit: r/${subreddit}, Term: "${term}", Matches: ${matches}`);
+        // Small delay to be respectful to Reddit's servers
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
+      return subredditMentions;
     });
-
     const results = await Promise.all(searchPromises);
     totalMentions = results.reduce((sum, count) => sum + count, 0);
-
+    console.log(`[Reddit] Total mentions for terms [${terms.join(', ')}]: ${totalMentions}`);
     return totalMentions;
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`Error fetching Reddit mentions for ${query}:`, error.message);
+      console.error(`Error fetching Reddit mentions for [${terms.join(', ')}]:`, error.message);
       throw error;
     } else {
-      console.error(`Error fetching Reddit mentions for ${query}:`, error);
+      console.error(`Error fetching Reddit mentions for [${terms.join(', ')}]:`, error);
       throw error;
     }
   }
