@@ -14,7 +14,7 @@ export async function POST() {
   const projects = await res.json();
   const total = projects.length;
 
-  let results: any[] = [];
+  const results: object[] = [];
   for (let offset = 0; offset < total; offset += BATCH_SIZE) {
     const batchRes = await fetch(
       `https://www.fluxrank.io/api/cron/reddit-collector?limit=${BATCH_SIZE}&offset=${offset}`,
