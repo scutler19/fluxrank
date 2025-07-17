@@ -14,23 +14,15 @@ export async function POST() {
   const projects = await res.json();
   const total = projects.length;
 
-  const results: object[] = [];
+  // Fire-and-forget: trigger all batches, do not await responses
   for (let offset = 0; offset < total; offset += BATCH_SIZE) {
     const url = `https://www.fluxrank.io/api/cron/reddit-collector?limit=${BATCH_SIZE}&offset=${offset}`;
-    console.log(`Calling batch: ${url}`);
-    const batchRes = await fetch(url, { method: 'GET' });
-    let batchData;
-    try {
-      batchData = await batchRes.json();
-    } catch {
-      batchData = { error: 'Non-JSON response', status: batchRes.status };
-    }
-    results.push({ offset, status: batchRes.status, url, ...batchData });
-    // Optional: delay between batches to avoid rate limits
-    await new Promise(r => setTimeout(r, 1000));
+    // Fire and forget
+    fetch(url, { method: 'GET' });
+    await new Promise(r => setTimeout(r, 500)); // small delay to avoid rate limits
   }
 
-  return new Response(JSON.stringify({ ok: true, total, batchSize: BATCH_SIZE, results }), { status: 200 });
+  return new Response(JSON.stringify({ ok: true, message: 'Batches triggered', total, batchSize: BATCH_SIZE }), { status: 200 });
 }
 
 export const GET = POST; 
