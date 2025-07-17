@@ -8,8 +8,6 @@ import Logo from '@/components/Logo'
 import { getTopProjects, getProjectHistory } from '@/lib/data'
 import { useState } from 'react';
 
-export const revalidate = 300 // Revalidate every 5 minutes
-
 function InfoBox() {
   const [open, setOpen] = useState(false);
   return (
