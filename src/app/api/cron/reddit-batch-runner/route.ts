@@ -16,17 +16,16 @@ export async function POST() {
 
   const results: object[] = [];
   for (let offset = 0; offset < total; offset += BATCH_SIZE) {
-    const batchRes = await fetch(
-      `https://www.fluxrank.io/api/cron/reddit-collector?limit=${BATCH_SIZE}&offset=${offset}`,
-      { method: 'GET' }
-    );
+    const url = `https://www.fluxrank.io/api/cron/reddit-collector?limit=${BATCH_SIZE}&offset=${offset}`;
+    console.log(`Calling batch: ${url}`);
+    const batchRes = await fetch(url, { method: 'GET' });
     let batchData;
     try {
       batchData = await batchRes.json();
     } catch {
       batchData = { error: 'Non-JSON response', status: batchRes.status };
     }
-    results.push({ offset, ...batchData });
+    results.push({ offset, status: batchRes.status, url, ...batchData });
     // Optional: delay between batches to avoid rate limits
     await new Promise(r => setTimeout(r, 1000));
   }
