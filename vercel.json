@@ -9,7 +9,7 @@
       "schedule": "2 0 * * *"
     },
     {
-      "path": "/api/cron/reddit-collector",
+      "path": "/api/cron/reddit-batch-runner",
       "schedule": "3 0 * * *"
     },
     {
