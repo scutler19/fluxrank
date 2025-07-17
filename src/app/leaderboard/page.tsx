@@ -10,11 +10,6 @@ import { useState } from 'react';
 
 export const revalidate = 300 // Revalidate every 5 minutes
 
-export const metadata = {
-  title: 'FluxRank.io – Live OSS Leaderboard',
-  description: 'Real-time leaderboard of open source projects ranked by momentum, combining GitHub stars, npm downloads, and Reddit buzz.',
-}
-
 function InfoBox() {
   const [open, setOpen] = useState(false);
   return (
