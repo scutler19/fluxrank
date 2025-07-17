@@ -7,6 +7,7 @@ import LeaderboardSkeleton from '@/components/LeaderboardSkeleton'
 import Logo from '@/components/Logo'
 import { getTopProjects, getProjectHistory } from '@/lib/data'
 import { useState } from 'react';
+import { Info } from 'lucide-react';
 
 function InfoBox() {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,7 @@ function InfoBox() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span className="text-lg">ℹ️</span>
+        <Info className="w-5 h-5 text-brand-lime" />
         <span>How are these scores calculated?</span>
         <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
       </button>

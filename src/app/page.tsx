@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Logo from '@/components/Logo'
 import EmailForm from '@/components/EmailForm'
+import { TrendingUp, BarChart2, Radar, ArrowRight } from 'lucide-react';
 
 export const dynamic = 'force-static'
 
@@ -32,9 +33,7 @@ export default function Home() {
             className="text-gray-400 hover:text-gray-200 transition-colors font-medium flex items-center gap-2 group"
           >
             <span>View Leaderboard</span>
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
       </header>
@@ -65,9 +64,7 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-5xl mx-auto mb-16 sm:mb-20">
           <div className="text-center group">
             <div className="w-16 h-16 bg-brand-lime/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-lime/20 transition-colors">
-              <svg className="w-8 h-8 text-brand-lime" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
+              <TrendingUp className="w-8 h-8 text-brand-lime" />
             </div>
             <h3 className="font-bold text-gray-100 mb-3 text-lg">Real-time Momentum</h3>
             <p className="text-gray-400 leading-relaxed">Track which projects are gaining traction right now, not just total popularity.</p>
@@ -75,9 +72,7 @@ export default function Home() {
 
           <div className="text-center group">
             <div className="w-16 h-16 bg-brand-pink/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-pink/20 transition-colors">
-              <svg className="w-8 h-8 text-brand-pink" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-              </svg>
+              <BarChart2 className="w-8 h-8 text-brand-pink" />
             </div>
             <h3 className="font-bold text-gray-100 mb-3 text-lg">Multi-Source Intelligence</h3>
             <p className="text-gray-400 leading-relaxed">Combines GitHub activity, npm downloads, and Reddit discussions for comprehensive insights.</p>
@@ -85,9 +80,7 @@ export default function Home() {
 
           <div className="text-center group">
             <div className="w-16 h-16 bg-brand-lime/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-lime/20 transition-colors">
-              <svg className="w-8 h-8 text-brand-lime" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              <Radar className="w-8 h-8 text-brand-lime" />
             </div>
             <h3 className="font-bold text-gray-100 mb-3 text-lg">Early Detection</h3>
             <p className="text-gray-400 leading-relaxed">Discover promising projects before they become mainstream and get ahead of the curve.</p>
@@ -100,12 +93,10 @@ export default function Home() {
           <p className="text-gray-400 mb-6 sm:mb-8 text-base sm:text-lg">Check out our live leaderboard with real data from popular open source projects.</p>
           <a 
             href="/leaderboard" 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-700 hover:bg-neutral-600 text-gray-200 font-medium rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-lime hover:bg-brand-limeLight text-gray-200 font-medium rounded-xl transition-colors"
           >
             <span>View Live Leaderboard</span>
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </main>
