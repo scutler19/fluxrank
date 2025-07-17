@@ -1,3 +1,5 @@
+"use client";
+
 import { Suspense } from 'react'
 import Spark from '@/components/Spark'
 import Delta from '@/components/Delta'
