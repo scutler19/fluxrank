@@ -26,53 +26,42 @@ async function fetchDownloads(packageName: string): Promise<number> {
   return data.downloads || 0;
 }
 
-async function processPackage(packageName: string): Promise<{ok: boolean, downloads?: number, error?: string}> {
+async function processPackage(project: { project_id: string, npm_package: string }): Promise<{ok: boolean, downloads?: number, error?: string}> {
   try {
-    console.log(`Processing package: ${packageName}`);
-    
-    // First, check if the package exists in the projects table
-    const { data: project, error: lookupError } = await supabase
-      .from('projects')
-      .select('project_id')
-      .eq('project_id', packageName)
-      .single();
-
-    if (lookupError || !project) {
-      return { ok: false, error: `Package not found in projects table: ${packageName}` };
+    const { project_id, npm_package } = project;
+    if (!npm_package) {
+      return { ok: false, error: `No npm_package for project_id: ${project_id}` };
     }
-    
+    console.log(`Processing project: ${project_id} (npm: ${npm_package})`);
     // Fetch npm data with retry logic for rate limits
     let downloads: number;
     try {
-      downloads = await fetchDownloads(packageName);
+      downloads = await fetchDownloads(npm_package);
     } catch (error) {
       if (error.message === "RATE_LIMIT_EXCEEDED") {
         // Wait 30 seconds and retry once
         console.log(`Rate limit hit, waiting 30 seconds before retry...`);
         await new Promise(resolve => setTimeout(resolve, 30000));
-        downloads = await fetchDownloads(packageName);
+        downloads = await fetchDownloads(npm_package);
       } else {
         throw error;
       }
     }
-
-    // Insert snapshot into database
+    // Insert snapshot into database using project_id (GitHub slug)
     const { error: insertError } = await supabase
       .from('snapshots')
       .insert({
-        project_id: packageName,
+        project_id,
         src: 'npm',
         downloads,
         captured_at: new Date().toISOString()
       });
-
     if (insertError) {
       throw new Error(`Database error: ${insertError.message}`);
     }
-
     return { ok: true, downloads };
   } catch (error) {
-    console.error(`Error processing ${packageName}:`, error);
+    console.error(`Error processing ${project.project_id}:`, error);
     return { ok: false, error: error.message };
   }
 }
@@ -80,87 +69,86 @@ async function processPackage(packageName: string): Promise<{ok: boolean, downlo
 serve(async (req) => {
   try {
     console.log("NPM request received");
-    
     // Handle POST requests for batch mode
     if (req.method === 'POST') {
       const body = await req.json();
       const { mode, packages } = body;
-      
       if (mode === 'batch' && packages && Array.isArray(packages)) {
-        const results = [];
-        for (const pkg of packages) {
-          const result = await processPackage(pkg);
-          results.push({ package: pkg, ...result });
+        // Fetch project_id and npm_package for each requested package
+        const { data: projects, error } = await supabase
+          .from('projects')
+          .select('project_id, npm_package')
+          .in('project_id', packages);
+        if (error) {
+          return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          });
         }
-        
+        const results: any[] = [];
+        for (const project of projects) {
+          const result = await processPackage(project);
+          results.push({ project_id: project.project_id, ...result });
+        }
         return new Response(JSON.stringify({ ok: true, results }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
         });
       }
     }
-    
-    // Handle GET requests for single package or all packages
+    // Handle GET requests for all npm projects
     const url = new URL(req.url);
     const packageName = url.searchParams.get('package');
-    console.log(`Package name: ${packageName}`);
-
     if (packageName) {
-      // Process single package
-      const result = await processPackage(packageName);
+      // Fetch project by npm_package
+      const { data: project, error } = await supabase
+        .from('projects')
+        .select('project_id, npm_package')
+        .eq('npm_package', packageName)
+        .single();
+      if (error || !project) {
+        return new Response(JSON.stringify({ error: `Project not found for npm_package: ${packageName}` }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      const result = await processPackage(project);
       const status = result.ok ? 200 : 400;
-      console.log(`Single package result:`, result);
       return new Response(JSON.stringify(result), {
         status,
         headers: { 'Content-Type': 'application/json' }
       });
     } else {
-      // Process all npm packages (those without slashes)
+      // Process all projects with an npm_package
       const { data: projects, error } = await supabase
         .from('projects')
-        .select('project_id');
-
+        .select('project_id, npm_package')
+        .not('npm_package', 'is', null);
       if (error) {
         return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
           status: 500,
           headers: { 'Content-Type': 'application/json' }
         });
       }
-
       if (!projects || projects.length === 0) {
-        return new Response(JSON.stringify({ ok: true, message: "No projects found" }), {
+        return new Response(JSON.stringify({ ok: true, message: "No projects with npm_package found" }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
         });
       }
-
-      // Filter for npm packages (no slashes)
-      const npmPackages = projects
-        .map(p => p.project_id)
-        .filter(id => !id.includes('/'));
-
-      if (npmPackages.length === 0) {
-        return new Response(JSON.stringify({ ok: true, message: "No npm packages found" }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        });
+      const results: any[] = [];
+      for (const project of projects) {
+        const result = await processPackage(project);
+        results.push({ project_id: project.project_id, ...result });
       }
-
-      // Process each npm package
-      const results = [];
-      for (const packageName of npmPackages) {
-        const result = await processPackage(packageName);
-        results.push({ package: packageName, ...result });
-      }
-
       return new Response(JSON.stringify({ ok: true, results }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
     }
   } catch (error) {
-    console.error("Server error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error('Error in NPM function:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

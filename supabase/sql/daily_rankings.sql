@@ -153,10 +153,9 @@ BEGIN
         zs.github_z_score,
         zs.npm_z_score,
         zs.reddit_z_score,
-        -- Weighted momentum score: 0.5 GitHub + 0.3 npm + 0.2 Reddit
-        COALESCE(zs.github_z_score * 0.5, 0) + 
-        COALESCE(zs.npm_z_score * 0.3, 0) + 
-        COALESCE(zs.reddit_z_score * 0.2, 0) as momentum_score,
+        -- Weighted momentum score: 0.7 GitHub + 0.3 npm (Reddit ignored for now)
+        COALESCE(zs.github_z_score * 0.7, 0) + 
+        COALESCE(zs.npm_z_score * 0.3, 0) as momentum_score,
         -- Get previous day's score
         (SELECT momentum_score 
          FROM daily_rankings 
@@ -164,9 +163,8 @@ BEGIN
          AND date = target_date - INTERVAL '1 day'
          LIMIT 1) as prev_score,
         -- Calculate delta vs previous period
-        (COALESCE(zs.github_z_score * 0.5, 0) + 
-         COALESCE(zs.npm_z_score * 0.3, 0) + 
-         COALESCE(zs.reddit_z_score * 0.2, 0)) - 
+        (COALESCE(zs.github_z_score * 0.7, 0) + 
+         COALESCE(zs.npm_z_score * 0.3, 0)) - 
         COALESCE((SELECT momentum_score 
                   FROM daily_rankings 
                   WHERE project_id = p.project_id 
